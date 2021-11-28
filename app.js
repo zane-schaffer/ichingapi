@@ -1,9 +1,10 @@
 let express = require('express');
+let cors = require('cors');
 
 const sqlite3 = require('sqlite3').verbose();
 
 let app = express();
-
+app.use(cors())
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 let db = new sqlite3.Database('./iChing.sqlite', (err) => {
