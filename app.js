@@ -16,7 +16,7 @@ let db = new sqlite3.Database('./iChing.sqlite', (err) => {
 app.post('/', function(req, res) {
     db.all("SELECT * FROM hexagrams WHERE binary =" + req.body.binary, function(err, rows) {
         rows.forEach(function (row) {
-            console.log(row);
+            res.json(row)
         })
     });
     db.close();
