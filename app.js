@@ -18,12 +18,23 @@ let db = new sqlite3.Database('./iChing.sqlite', (err) => {
 })
 
 app.post('/', function(req, res) {
-    db.all("SELECT * FROM hexagrams WHERE binary =" + req.body.binary, function(err, rows) {
-        rows.forEach(function (row) {
-            res.json(row)
-        })
-    });
-    db.close();
+    let binary = req.body.binary || 111111
+    db.serialize(function() {
+        db.all("SELECT * FROM hexagrams WHERE binary =" + binary, function(err, rows) {
+            if (err) {
+                console.error(err)
+            } else {
+                rows.forEach(function (row) {
+                    res.json(row)
+                })
+            }
+
+        });
+
+
+    })
+
+
 })
 
 module.exports = app;
