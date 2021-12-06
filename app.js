@@ -23,7 +23,8 @@ let db = new sqlite3.Database('./iChing.sqlite', (err) => {
 app.post('/hexagrams', function(req, res) {
     let binary = req.body.binary || "111111"
     db.serialize(function() {
-        db.all("SELECT * FROM hexagrams WHERE binary = '" + binary +"'", function(err, rows) {
+
+        db.all(("SELECT * FROM hexagrams WHERE binary = '" + binary +"'"), function(err, rows) {
             if (err) {
                 console.error(err)
             } else {
@@ -38,15 +39,19 @@ app.post('/hexagrams', function(req, res) {
 app.post('/changing', function(req, res) {
     let hexagram = req.body.hexagram || "64"
     let changed_lines = req.body.changed_lines || ["1","2"]
+    let response = {}
     db.serialize(function() {
         for ( let i = 0; i < changed_lines.length; i ++) {
             db.all(`SELECT * FROM changing_lines WHERE hexagram_id = ${hexagram} AND line_position = ${changed_lines[i]}`, function (err, rows) {
                 if (err) {
-                    res.send(err)
+                    console.log(err)
                 } else {
                     rows.forEach(function (row) {
-                        res.json(row)
+                        response[row.line_position] = row
                     })
+                    if (i === changed_lines.length - 1) {
+                        res.json(response)
+                    }
                 }
             })
         }
