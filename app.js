@@ -40,16 +40,16 @@ app.post('/changing', function(req, res) {
     let changed_lines = req.body.changed_lines || ["1","2"]
     db.serialize(function() {
         for ( let i = 0; i < changed_lines.length; i ++) {
+            db.all("SELECT * FROM changing_lines WHERE hexagram_id =" + hexagram + "AND line_position =" + changed_lines[i], function (err, rows) {
+                if (err) {
+                    res.send(err)
+                } else {
+                    rows.forEach(function (row) {
+                        res.json(row)
+                    })
+                }
+            })
         }
-        db.all("SELECT * FROM changing_lines WHERE hexagram_id =" + hexagram + "AND line_position =" + changed_lines[i], function (err,rows) {
-            if (err) {
-                res.send(err)
-            } else {
-                rows.forEach(function (row) {
-                    res.json(row)
-                })
-            }
-        })
     })
 })
 
