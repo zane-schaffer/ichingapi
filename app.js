@@ -17,8 +17,11 @@ let db = new sqlite3.Database('./iChing.sqlite', (err) => {
     console.log('Connected to the iChing database.')
 })
 
-app.post('/', function(req, res) {
-    let binary = req.body.binary || 111111
+
+
+
+app.post('/hexagrams', function(req, res) {
+    let binary = req.body.binary || "111111"
     db.serialize(function() {
         db.all("SELECT * FROM hexagrams WHERE binary =" + binary, function(err, rows) {
             if (err) {
@@ -28,13 +31,26 @@ app.post('/', function(req, res) {
                     res.json(row)
                 })
             }
-
         });
-
-
     })
+})
 
-
+app.post('/changing', function(req, res) {
+    let hexagram = req.body.hexagram || "64"
+    let changed_lines = req.body.changed_lines || ["1","2"]
+    db.serialize(function() {
+        for ( let i = 0; i < changed_lines.length; i ++) {
+        }
+        db.all("SELECT * FROM changing_lines WHERE hexagram_id =" + hexagram + "AND line_position =" + changed_lines[i], function (err,rows) {
+            if (err) {
+                res.send(err)
+            } else {
+                rows.forEach(function (row) {
+                    res.json(row)
+                })
+            }
+        })
+    })
 })
 
 module.exports = app;
